@@ -1,0 +1,120 @@
+h2. YQL-Utilities
+
+
+This widget contains files associated with the construction of a JavaScript / PHP widget for displaying private data obtained from YQL such as your user badge and update stream.
+This widget uses the following external utilities:
+* <a href="http://developer.yahoo.com/yui/connection/" target="_blank">Connection Manager</a> - Obtains data from private YQL URI
+* <a href="http://developer.yahoo.com/yui/json/" target="_blank">JSON utility</a> - Parses serialized JSON string
+
+There are several core files associated with this widget:
+
+<b>config.php</b><br>
+This file contains all of the configuration globals for the utility.  The values in this file need to be changed during installation - globals include:
+* KEY - The OAuth api key provided after setting up a new OAuth application (see installation steps for the place to obtain this)
+* SECRET - The OAuth shared secret key provided after setting up a new OAuth application (see installation steps for the place to obtain this)
+* APPID - The application id provided after setting up a new OAuth application (see installation steps for the place to obtain this)
+* CALLBACK - The URL to forward back to once setup has completed.  This is usually the same URL that the widget is installed at
+* REQUEST_TOKEN_URL - The url to the request_token storage file.  If file does not exist it will be created.  Example: "./tokens/request_token.txt"
+* ACCESS_TOKEN_URL - The url to the access_token storage file.  If file does not exist it will be created.  Example: "./tokens/access_token.txt"
+
+<b>CustomSessionStore.inc</b><br>
+This file contains the session storage routines used to maintain your authenticated OAuth session.  This file may be modified to store / retrieve the request & access tokens from a database instead of the incecure flat text file.
+
+<b>private_data_fetch.php</b><br>
+File that is called through the AJAX request to instantiate the OAuth session and retrieve YQL data.  This file should not be modified.
+
+<b>runmefirst.php</b><br>
+This is the installation setup file.  This file should be run as soon as widget setup is complete and then deleted.  This should should not be modified.  See installation steps for exact details on this.
+
+<b>yql_php_widget.html</b><br>
+This is an example HTML example of how to setp up and call this widget to display private user data.
+
+<b>yql_php_widget.js</b>
+This is the JavaScript control file to facilitate the requests and manipulation of data from YQL.  This should should not be modified.
+
+
+h3. Installation Steps
+
+Follow the steps below to install the PHP YQL widget on your server:
+# Go to https://developer.yahoo.com/dashboard and create a new <b>OAuth</b> application (not an Open application).  The URL of this application should be where the widget will be installed.  Make sure to mark down your api key, shared secret key, and application id when your application is set up.
+# Copy all files in this widget example to the directory where you would like the widget to display 
+# If you are using the text file storage for your tokens, create a "tokens" directory.  This name should match the token_url paths within the config.php file.
+# Create a folder called "php_sdk".  Download the Y!OS PHP SDK from http://github.com/yahoo/yos-social-php/tree/master and copy the contents of the lib folder within the SDK to this new directory.
+# Open config.php and change your key, secret and appid globals to the values obtained from step 1.  Change the token URLs to reflect the location defined in step 3.
+# Run runmefirst.php to store your access token.  It is very important that this file be run right after installation because it will store the token of the first user who authenticates it.  If you see a success message you may delete that file.
+# Your social updates widget is now ready to use.
+
+
+h3. HTML file configuration
+
+The provided HTML file displays your updates and has an optional parameter for adding your badge & status automatically.  This file may be modified to look / function in any way you wish.  It can also pull and display data from different Y!OS social sources (http://developer.yahoo.com/social/rest_api_guide/) if the YQL query is changed.  Below is a brakdown of the specifics for the sample HTML file:
+
+<notextile>
+<pre>
+1.  &lt;script type="text/javascript" src="yql_js_widget.js"&gt;&lt;/script&gt;
+2.  &lt;div id="widgetContainer"&gt;&lt;/div&gt;
+3.  &lt;script type="text/javascript"&gt;
+4.  var config = {'badge':true, 'num_results':10, 'debug':true};
+5.  var format = '&lt;div class="widgetRow"&gt;&lt;a href="{link}" target="_blank"&gt;&lt;div style="background-color:#fff;border:2px solid #8fc5eb;width:20px;height:20px;float:left;margin-right:4px;"&gt;&lt;img src="{loc_iconURL}" width="16" height="16" style="border:0;padding:2px;" /&gt;&lt;/div&gt;&lt;/a&gt; &lt;a href="{link}" target="_blank"&gt;{loc_longForm}&lt;/a&gt;&lt;br /&gt;{lastUpdated}&lt;/div&gt;';
+6.  var yqlQuery = 'select lastUpdated, link, loc_iconURL, loc_longForm, profile_nickname, profile_profileUrl, publishedTime from social.updates where guid=me | sort(field="lastUpdated") | reverse()';
+7.  var insertEl = 'widgetContainer';
+8.  yqlWidget.push(yqlQuery, config, format, insertEl);
+9.  yqlWidget.render();
+10. &lt;/script&gt;
+</pre>
+</notextile>
+
+Going through the above example, here is the definition for how to format the requests:
+
+<b>Line 1</b><br />
+Include the widget JavaScript file
+
+<b>Line 2</b><br />
+Create the container the you would like to drop the widget into (must have an id)
+
+<b>Line 4</b><br />
+<i>(OPTIONAL)</i> Define the config object. This object has the following available key / value pairs:
+* badge (true / false) - If set to true, your profile photo, name, location and status will be displayed at the top of the widget
+* num_results (int) - The number of results to display in the widget
+* debug (true / false) - If set to true, status messages will be displayed via console.log during widget rendering
+
+<b>Line 5</b><br />
+Define the format string.  This string will be what is inserted into the container defined on line 2 and will be added for each result returned by YQL and may contain HTML / CSS / JavaScript.  Any text that is added between curly brackets (e.g. {test}) will be re-rendered as the associated data returned by YQL.  For instance, if you go to the <a href="http://developer.yahoo.com/yql/console/?q=select%20*%20from%20weather.forecast%20where%20location%3D90210" target="_blank">YQL Console</a> and run the weather query, {item.description} will relate to the results at query->results->channel->item->description.
+
+<b>Line 6</b><br />
+Define the YQL query to pass to the private YQL URI. 
+
+<b>Line 7</b><br />
+Define the id of the container you wish to insert the widget into
+
+<b>Line 8</b><br />
+Push the widget on the stack.  If you have multiple widgets to be rendered, you would push each widget on the load stack using push before rendering (as seen on line 9).  The push function accepts the following parameters:
+* YQL Query <i>(REQUIRED)</i> - The query defined on line 6
+* Config <i>(OPTIONAL)</i> - The config object defined on line 4
+* Format <i>(REQUIRED)</i> - The content to add for each result into the container defined
+* Insert Element <i>(REQUIRED)</i> - The id of the container to insert the widget into
+
+<b>Line 9</b><br />
+Render all widgets pushed onto the load stack
+
+
+
+h3. Code Contributions
+
+This project only accepts contributions licensed under the BSD open source license. See the Open Source Initiative's approved template below.<br>
+Each file submitted should contain the following information in the header:<br>
+// Created by [contributor]<br>
+// Copyright (c) [enter owning person entity, year].  All Rights Reserved.<br> 
+// Licensed under the BSD (revised) open source license.<br>
+
+Below is the Open Source Initiative BSD License Template (http://opensource.org/licenses/bsd-license.php):<br>
+
+Copyright (c) &lt;YEAR&gt;, &lt;OWNER&gt;<br>
+All rights reserved.<br>
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+* Neither the name of the <ORGANIZATION> nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+<br>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+

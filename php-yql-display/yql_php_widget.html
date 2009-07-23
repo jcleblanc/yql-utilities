@@ -1,0 +1,44 @@
+<html>
+<head>
+<title>YQL / YUI PHP Widget For Private Data</title>
+<!--
+* yql_php_widget.html
+* YQL PHP OAuth Widget
+*
+* Created by Jonathan LeBlanc on 06/09/09.
+* Copyright (c) 2009 Yahoo! Inc. All rights reserved.
+* 
+* The copyrights embodied in the content of this file are licensed under the BSD (revised) open source license.
+-->
+
+<!-- widget file include -->
+<script type="text/javascript" src="yql_php_widget.js"></script>
+
+<style>
+div#badgeContainer{ padding:0 5px; font:bold 14px arial,helvetica,sans-serif; color:#f0f0f0; }
+div#badgeContainer img{ float:left; margin-right:8px; margin-top:3px; border:0; }
+div#badgeContainer span{ font-weight:normal; font-size:12px; }
+div#badgeContainer a{ text-decoration:none; color:#f0f0f0; }
+div#badgeContainer a:hover{ text-decoration:underline; }
+div#widgetContainer{ background-color:#474747; width:300px; padding:5px 0; }
+div#widgetContainer div.iconBox{ width:17px; height:16px; float:left; }
+div#widgetContainer div.widgetRow{ padding:5px; background-color:#509cd1; border:1px solid #8fc5eb; margin:5px; overflow:hidden; }
+div#widgetContainer div.widgetRow, div#widgetContainer div.widgetRow a{ color:#f0f0f0; font:11px arial,helvetica,sans-serif; }
+div#widgetContainer div.widgetRow a{ font-weight:bold; }
+</style>
+
+</head>
+<body>
+<div id="widgetContainer"></div>
+
+<script type="text/javascript">
+var config = {'badge':true, 'num_results':10, 'debug':true};
+var format = '<div class="widgetRow"><a href="{link}" target="_blank"><div style="background-color:#fff;border:2px solid #8fc5eb;width:20px;height:20px;float:left;margin-right:4px;"><img src="{loc_iconURL}" width="16" height="16" style="border:0;padding:2px;" /></div></a> <a href="{link}" target="_blank">{loc_longForm}</a><br />'
+		   + '{lastUpdated}</div>';
+var yqlQuery = 'select lastUpdated, link, loc_iconURL, loc_longForm, profile_nickname, profile_profileUrl, publishedTime from social.updates where guid=me | sort(field="lastUpdated") | reverse()';
+var insertEl = 'widgetContainer';
+yqlWidget.push(yqlQuery, config, format, insertEl);
+yqlWidget.render();
+</script>
+
+</body></html>

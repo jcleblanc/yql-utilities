@@ -1,0 +1,32 @@
+<!--
+yql_js_widget.html
+YQL JavaScript Widget
+
+Created by Jonathan LeBlanc on 06/08/09.
+Copyright (c) 2009 Yahoo! Inc. All rights reserved.
+ 
+The copyrights embodied in the content of this file are licensed under the BSD (revised) open source license.
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>YQL / YUI JavaScript Widget</title>
+<!-- widget file include -->
+<script type="text/javascript" src="yql_js_widget.js"></script>
+</head>
+<body>
+
+<div id="widgetContainer"></div><br style="clear:both" />
+
+<script type="text/javascript">
+var config = {'debug':true};
+var format = '<br style="clear:both" /><img src="{content}" width="620" height="500" alt="map" />';
+var yqlQuery = 'SELECT * FROM maps.map WHERE (latitude, longitude) IN (SELECT match.place.centroid.latitude, match.place.centroid.longitude FROM geo.placemaker WHERE documentURL = "http://www.cnn.com/" AND documentType="text/html")';
+var insertEl = 'widgetContainer';
+yqlWidget.push(yqlQuery, config, format, insertEl);
+yqlWidget.render();
+</script>
+
+</body>
+</html>
