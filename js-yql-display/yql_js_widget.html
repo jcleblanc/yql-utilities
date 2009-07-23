@@ -22,7 +22,7 @@ The copyrights embodied in the content of this file are licensed under the BSD (
 <script type="text/javascript">
 var config = {'debug':true};
 var format = '<br style="clear:both" /><img src="{content}" width="620" height="500" alt="map" />';
-var yqlQuery = 'SELECT * FROM maps.map WHERE (latitude, longitude) IN (SELECT match.place.centroid.latitude, match.place.centroid.longitude FROM geo.placemaker WHERE documentURL = "http://www.cnn.com/" AND documentType="text/html")';
+var yqlQuery = 'SELECT * FROM maps.map WHERE (latitude, longitude) IN (SELECT match.place.centroid.latitude, match.place.centroid.longitude FROM geo.placemaker WHERE documentURL = "http://www.cnn.com/" AND documentType="text/html" AND appid="")';
 var insertEl = 'widgetContainer';
 yqlWidget.push(yqlQuery, config, format, insertEl);
 yqlWidget.render();
