@@ -10,8 +10,8 @@
 
 //YUI includes for GET utility
 if (! window.YAHOO){
-    document.write('<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/yahoo/yahoo-min.js" ></script>' +
-		   '<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/get/get-min.js" ></script>');
+	document.write('<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/yahoo/yahoo-min.js" ></script>' +
+				   '<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/get/get-min.js" ></script>');
 }
    
 yqlWidget = function() {
@@ -35,22 +35,27 @@ yqlWidget = function() {
 	************************************************************/
 	var getYQLData = function(query){
 		//prepare the URL for YQL query:
-        	var sURL = yqlPublicQueryURL + "q=" + encodeURI(query) + "&format=json&callback=yqlWidget.getYQLDataCallback";
+        var sURL = yqlPublicQueryURL + "q=" + encodeURI(query) + "&format=json&callback=yqlWidget.getYQLDataCallback";
 
 		//add any environment files specified in the config
 		if (setupConfig['env']) {
 			sURL += "&env=" + escape(setupConfig['env']);
 		}
 		
+		//disable diagnostics if not set to true
+		if (setupConfig['diagnostics'] !== true){
+			sURL += "&diagnostics=false";
+		}
+		
 		//make GET request to YQL with provided query
-        	var transactionObj = YAHOO.util.Get.script(sURL, {
+        var transactionObj = YAHOO.util.Get.script(sURL, {
          	onSuccess : onYQLReqSuccess,
-		onFailure : onYQLReqFailure,
-            	scope     : this
-        	});
+			onFailure : onYQLReqFailure,
+            scope     : this
+        });
 		
 		return transactionObj;
-    	}
+    }
 	
 	/************************************************************
 	* Method: Parse YQL Results
@@ -93,6 +98,8 @@ yqlWidget = function() {
 	var parseFormat = function(node){
 		currString = node;
 		
+		console.log(currString);
+		
 		//replace YQL result placeholders with return content
 		if (resultFormat){ currString = resultFormat.replace(regex, function(matchedSubstring, index, originalString){
 			return eval("currString." + index);
@@ -131,6 +138,7 @@ yqlWidget = function() {
 		
 		//yql data caption success callback
 		getYQLDataCallback: function(o){
+			console.log(o.query);
 			if (! o.query){
 				if (setupConfig['debug'] && window.console){ console.log('YQL query returned no results'); }
 				return null;
