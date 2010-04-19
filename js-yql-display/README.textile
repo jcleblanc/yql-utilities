@@ -64,13 +64,13 @@ h3. Code Contributions
 
 This project only accepts contributions licensed under the BSD open source license. See the Open Source Initiative's approved template below.<br>
 Each file submitted should contain the following information in the header:<br>
-// Created by [contributor]<br>
-// Copyright (c) [enter owning person entity, year].  All Rights Reserved.<br>
+// Created by Jonathan LeBlanc<br>
+// Copyright (c) Jonathan LeBlanc, 2010.  All Rights Reserved.<br>
 // Licensed under the BSD (revised) open source license.<br>
 
 Below is the Open Source Initiative BSD License Template (http://opensource.org/licenses/bsd-license.php):<br>
 
-Copyright (c) &lt;YEAR&gt;, &lt;OWNER&gt;<br>
+Copyright (c) &lt;2010&gt;, &lt;Jonathan LeBlanc&gt;<br>
 All rights reserved.<br>
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
